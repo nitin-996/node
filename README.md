@@ -94,3 +94,22 @@ npm init --yes => it takes the takes automatically.
 
 # jshint
 Static analysis tool for JavaScript.
+
+# package.json
+
+^4.6.4  equals to 4.x.x , it means that whenever it find its minor & patch version to update it will do it automaticall.
+
+~4.6.4 equals to 4.6.x it means that whenever it find its patch version to update it will do it automaticall.
+
+to statically mention the version type without caret and tilde charactors type only version number like 4.6.4 
+
+# npm commands
+
+npm list --depth=0
+npm view mongoose dependencies
+npm view mongoose versions
+
+npm outdated  = shows the packages version on which you would like to update.
+npm update  = only update minor & patches
+
+npm-check-updates = used to update major version update , it made changes in package.json file. after this need to run npm i command.
