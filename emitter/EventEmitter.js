@@ -8,4 +8,4 @@ logger.on('start', (arg) => {
 })
 
 
-logger.log('msg')
+logger.log()

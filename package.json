@@ -1,0 +1,45 @@
+{
+  "scripts": {
+  
+    
+  "start": "node server.js"
+  
+  },
+  
+  "name": "node",
+  
+  "description": "node basics",
+  
+  "version": "1.0.0",
+  
+  "main": "server.js",
+  
+  "repository": {
+  
+    
+  "type": "git",
+  
+    
+  "url": "git+https://github.com/nitin-996/node.git"
+  
+  },
+  
+  "author": "infinity",
+  
+  "license": "ISC",
+  
+  "bugs": {
+  
+    
+  "url": "https://github.com/nitin-996/node/issues"
+  
+  },
+  
+  "homepage": "https://github.com/nitin-996/node#readme",
+  
+  "dependencies": {
+  
+  "express": "^4.18.2"
+  
+  }
+}

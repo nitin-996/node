@@ -113,3 +113,30 @@ npm outdated  = shows the packages version on which you would like to update.
 npm update  = only update minor & patches
 
 npm-check-updates = used to update major version update , it made changes in package.json file. after this need to run npm i command.
+
+npm un <package name> = to uninstall the package. un stands for unimstall.
+
+# publish own module to npm
+
+https://stackabuse.com/publishing-a-nodejs-module-to-npm/
+
+npm login = this command it for existed used
+OR
+npm useradd = to create new user
+npm publish = to publish own module to node.
+
+node module name must be unique.
+
+if we updated the some feature og module then use below command to update the version.
+
+npm version <minor/major/patch>  
+
+# rest api
+
+Representational state transfer
+
+
+
+
+
+npm i -g npm = will update npm to its latest version.
