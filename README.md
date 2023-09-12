@@ -135,8 +135,66 @@ npm version <minor/major/patch>
 
 Representational state transfer
 
-
-
-
-
 npm i -g npm = will update npm to its latest version.
+
+
+# Ejs
+
+_it is html template engine_
+
+[use of EJS](https://www.geeksforgeeks.org/use-ejs-as-template-engine-in-node-js/).
+
+# Middleware
+
+[express middleware](https://expressjs.com/en/guide/using-middleware.html)
+
+# async programing
+
+[three methods to handle the async program](https://www.freecodecamp.org/news/asynchronous-programming-in-javascript/)
+
+# mongoose
+
+collection resembles table
+document resembles the rows 
+
+### Model in mongodb
+
+[use of model](https://javascript.plainenglish.io/node-js-models-and-database-3836f0c7f2da)
+
+[mongoose model](https://www.freecodecamp.org/news/introduction-to-mongoose-for-mongodb-d2a7aa593c57/#:~:text=Mongoose%20Schema%20vs.-,Model,updating%2C%20deleting%20records%2C%20etc.)
+
+# w3 School
+
+[node](https://www.w3schools.com/nodejs/nodejs_mongodb_createcollection.asp)
+
+# operator in mongodb
+
+[comparision operator](https://www.mongodb.com/docs/manual/reference/operator/query/)
+
+# 30 day node
+
+[node articles](https://www.nodejsera.com/nodejs-tutorial-day3-regular-expressions.html)
+
+# regular expression
+
+[w3 js RG](https://www.w3schools.com/js/js_regexp.asp)
+
+
+# json.parse and json.stringify
+
+[parsing method](https://www.geeksforgeeks.org/what-is-difference-between-json-parse-and-json-stringify-methods-in-javascript/)
+
+# mongoose pagination
+
+[Create a Paginated API with MongoDB and Node JS](https://javascript.works-hub.com/learn/how-to-create-a-paginated-api-with-mongodb-and-node-js-6e1e3)
+
+# mongoose populate
+
+[what is the use if populate](https://www.geeksforgeeks.org/mongoose-populate/)
+
+
+
+
+
+
+
