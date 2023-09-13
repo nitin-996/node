@@ -193,6 +193,18 @@ document resembles the rows
 [what is the use if populate](https://www.geeksforgeeks.org/mongoose-populate/)
 
 
+# modules
+
+**imported fs module with single method only**
+
+```
+const fs = require('fs').writeFileSync
+
+```
+
+
+
+
 
 
 
