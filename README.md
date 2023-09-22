@@ -5,6 +5,31 @@ node basics
 
 https://nodejs.dev/en/learn/the-nodejs-event-emitter/
 
+
+
+the code is utilizing JavaScript's classical inheritance mechanism with the `class` keyword to create a subclass that inherits from a superclass. Here's a breakdown of how it works:
+
+1. **Superclass**: `EventEmitter` is a built-in class provided by Node.js as part of the `events` module. It allows you to work with events and event-driven programming.
+
+2. **Subclass**: `MyEmitter` is a subclass created using the `class` keyword. It extends the `EventEmitter` superclass, inheriting all its methods and properties.
+
+3. **Inheritance**: By extending `EventEmitter`, the `MyEmitter` class inherits the behavior of `EventEmitter`. This means `MyEmitter` can emit and listen for events just like `EventEmitter`.
+
+Here's the relevant code snippet:
+
+```javascript
+class MyEmitter extends EventEmitter {}
+const myEmitter = new MyEmitter();
+```
+
+In this code:
+
+- `class MyEmitter extends EventEmitter {}` creates a new class `MyEmitter` that extends the `EventEmitter` class. This means that `MyEmitter` inherits all the methods and functionality of `EventEmitter`.
+
+- `const myEmitter = new MyEmitter();` creates an instance of the `MyEmitter` class, which can be used to emit and listen for events.
+
+So, the `extends` keyword is used for class inheritance in JavaScript, allowing you to create a new class that is based on an existing class, inheriting its behavior and characteristics. In this case, `MyEmitter` inherits from `EventEmitter` to create a custom event emitter with additional functionality if needed.
+
 # Keywords list
 
 break: Terminates the current loop or switch statement.
@@ -144,9 +169,17 @@ _it is html template engine_
 
 [use of EJS](https://www.geeksforgeeks.org/use-ejs-as-template-engine-in-node-js/).
 
+ejs files only use with ejs files, we can't use it with html.
+
+[to use ejs within ejs ](https://stackoverflow.com/questions/5813771/in-ejs-template-engine-how-do-i-include-a-footer , https://ejs.co/)
+
 # Middleware
 
 [express middleware](https://expressjs.com/en/guide/using-middleware.html)
+
+[middleware](https://www.geeksforgeeks.org/middleware-in-express-js/)
+
+[middleware video](https://www.youtube.com/watch?v=6Spfry-_fAY&list=PL8p2I9GklV456iofeMKReMTvWLr7Ki9At&index=25)
 
 # async programing
 
@@ -201,10 +234,33 @@ document resembles the rows
 const fs = require('fs').writeFileSync
 
 ```
+# input CLI in node
+
+[process.argv](https://tedante.medium.com/input-command-line-process-argv-in-nodejs-bfe4abab7657)
 
 
+# callstack in node explained
+
+[how does callstack works](https://www.youtube.com/watch?v=mGVFltBxLKU&list=PL8p2I9GklV456iofeMKReMTvWLr7Ki9At&index=17)
 
 
+# validation concept in node
+
+[validation](https://codingstatus.com/node-js-form-validation/)
+
+# authentication in nodejs
+
+[authentication and authorization](https://www.codementor.io/@manashkumarchakrobortty/authentication-and-authorization-in-node-js-19brdvhsyw)
+
+
+# params in node js
+
+[how to set params in node](https://www.geeksforgeeks.org/express-js-req-params-property/)
+
+
+# multer 
+
+file upload npm package
 
 
 
