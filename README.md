@@ -263,7 +263,12 @@ const fs = require('fs').writeFileSync
 
 file upload npm package
 
+# static file serving
+
+[public folder](https://expressjs.com/en/starter/static-files.html)
 
 
+# mvc model
 
+node uses [mvc model](https://www.geeksforgeeks.org/model-view-controllermvc-architecture-for-node-applications/)
 

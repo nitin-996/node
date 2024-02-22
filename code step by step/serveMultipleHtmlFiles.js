@@ -1,3 +1,4 @@
+const { log } = require('console');
 const express = require('express');
 const path = require('path');
 
@@ -14,3 +15,5 @@ app.use(express.static(publicDirectoryPath));
 app.listen(port, () => {
     console.log(`Server is up and running on port ${port}`);
 });
+
+console.log(__dirname);
