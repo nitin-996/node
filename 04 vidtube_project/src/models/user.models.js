@@ -77,7 +77,7 @@ userSchema.methods.ispasswordCorrrect = async function(password){
 }
 
 
-// access token
+// access token (used at login time)
 userSchema.methods.generateAccessToken =  async function(){
 
     var token = jwt.sign(
@@ -93,7 +93,7 @@ userSchema.methods.generateAccessToken =  async function(){
 
 }
 
-// refresh token
+// refresh token (after login for session management)
 userSchema.methods.generateRefreshToken =  async function(){
 
     var token = jwt.sign(
@@ -108,6 +108,6 @@ userSchema.methods.generateRefreshToken =  async function(){
 }
 
 
-const User = mongoose.model("User" , userSchema)
+const Users = mongoose.model("Users" , userSchema)
 
-export {User}
+export {Users}

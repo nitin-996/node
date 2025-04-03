@@ -15,11 +15,14 @@ var corsOptions = {
   app.use(express.static("public"))
   app.use(express.urlencoded({extended:true,limit:"16kb"}))
   app.use(cookieParser())
+  app.use(errorHandler)
 
 // Routes
 import healthcheckRouter from "./routes/healthcheck.routes.js"
+import { errorHandler } from "./middlewares/error.middleware.js"
+import user from "./routes/user.routes.js"
 
-
+app.use("/api/v1/users", user)
 app.use("/api/v1/healthcheck", healthcheckRouter)
 
 
