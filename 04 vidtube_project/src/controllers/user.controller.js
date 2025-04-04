@@ -3,6 +3,8 @@ import { ApiError } from "../utils/ApiError.js";
 import { Users } from "../models/user.models.js";
 import { uploadToCloudinary } from "../utils/cloudinary.js";
 import { ApiRespose } from "../utils/ApiResponse.js";
+import jwt from "jsonwebtoken";
+import fs from "fs";
 
 const generateAccesandRefreshToken = async (userid) => {
   const user = Users.findById(userid);
@@ -90,12 +92,266 @@ const userRegister = asyncHandler(async (req, res) => {
     .json(new ApiRespose(200, createdUser, "user has been created"));
 });
 
-const userLogin = asyncHandler(async (req,res) =>{
+const userLogin = asyncHandler(async (req, res) => {
+  const { username, email, password } = req.body;
 
-const {username,email,password} = req.body
+  // validation
 
+  if (!email) {
+    throw new ApiError(400, "email is required");
+  }
+  const loggedinUser = await Users.findOne({ $or: [{ username }, { email }] });
 
+  if (!loggedinUser) {
+    console.log("while login user is not found");
+    return "user is not found";
+  }
 
-})
+  // validating password
+  const ispasswordCorrect = await Users.ispasswordCorrect(password);
 
-export { userRegister };
+  if (!ispasswordCorrect) {
+    throw new ApiError(400, "Invalid credential");
+  }
+
+  const { accessToken, refreshToken } = await generateAccesandRefreshToken(
+    loggedinUser._id
+  );
+
+  const options = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+  };
+
+  return res
+    .status(200)
+    .cookies("accessToken", accessToken, options)
+    .cookies("refreshToken", refreshToken, options)
+    .json(new ApiRespose(200, loggedinUser, "user loggedin successfully"));
+});
+
+// when access token expires , here we are using refreshtoken to issue new accessToken and refreshToken.
+const refreshAccessToken = asyncHandler(async (req, res) => {
+  const incomingRefreshToken =
+    req.cookies.refreshToken || req.body.refreshToken;
+
+  if (!incomingRefreshToken) {
+    throw new ApiError(400, "Invalid access Token");
+  }
+
+  try {
+    const decodeToken = jwt.verify(
+      incomingRefreshToken,
+      process.env.Refresh_Token_Secret
+    );
+
+    const user = await Users.findById(decodeToken?._id);
+
+    if (!user) {
+      throw new ApiError(400, "Invalid access Token");
+    }
+
+    if (incomingRefreshToken !== user?.refreshToken) {
+      throw new ApiError(400, "Invalid access Token");
+    }
+
+    const { accessToken, refreshToken: newRefreshToken } =
+      await generateAccesandRefreshToken(user._id);
+
+    return res
+      .status(200)
+      .cookies("accessToken", accessToken, options)
+      .cookies("refreshToken", newRefreshToken, options)
+      .json(
+        new ApiRespose(
+          200,
+          { accessToken, newRefreshToken },
+          "user access token successfully refresh "
+        )
+      );
+  } catch (error) {
+    throw new ApiError(400, "sth went wrong while refresing Token");
+  }
+});
+
+const userLogout = asyncHandler(async (req, res) => {
+  await Users.findByIdAndUpdate(
+    req.user._id,
+    {
+      $set: { refreshToken: undefined },
+    },
+    { new: true }
+  );
+
+  return res
+    .status(200)
+    .clearCookies("accessToken", options)
+    .clearCookies("refreshToken", options)
+    .json(new ApiRespose(200, {}, "user logged out sucessfully"));
+});
+
+const changeCurrentPassword = asyncHandler(async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+
+  const user = await Users.findById(req.user?._id);
+
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  // ispasswordCorrect is a custom function which i have define in user model. check there to understand the work flow
+  const isPasswordValid = await user.ispasswordCorrect(oldPassword);
+
+  if (!isPasswordValid) {
+    throw new ApiError(401, "Old password does not match");
+  }
+
+  user.password = newPassword; // This is plain text — will be hashed in pre-save hook
+
+  /*  ✅ await user.save({ validateBeforeSave: false }) — What does it do?
+
+    This option disables Mongoose schema validation before saving the 
+    document. Mongoose normally runs all your schema's validators (e.g., 
+    required fields, email format, etc.) when calling .save(). This 
+    option skips those validations.*/
+
+  await user.save({ validateBeforeSave: false }); // ✅ triggers hashing
+
+  return res
+    .status(200)
+    .json(new ApiRespose(200, {}, "Password changed successfully"));
+});
+
+const getCurrentUser = asyncHandler(async (req, res) => {
+  //  here user id got from auth middleware
+
+  const currentUser = await Users.findById(req.user._id).select(
+    "-password -refreshToken"
+  ); // hide sensitive fields
+
+  if (!currentUser) {
+    throw new ApiError(400, "Invalid details");
+  }
+
+  res
+    .status(200)
+    .json(
+      new ApiRespose(200, currentUser, "Current user fetched successfully")
+    );
+});
+
+// update details like fullname and email
+const updateAccountDetails = asyncHandler(async (req, res) => {
+  const { fullname, email } = req.body;
+
+  if (!fullname || !email) {
+    throw new ApiError(400, "Invalid details");
+  }
+
+  // “Find a user whose email is equal to the one the user is trying to update to
+  //  — and whose _id is not the same as the currently logged-in user's _id.”
+  const existingUser = await Users.findOne({
+    email,
+    _id: { $ne: req.user._id }, // Exclude current user from match
+  });
+
+  if (existingUser) {
+    throw new ApiError(409, "Email already in use by another account");
+  }
+
+  const updatedUser = await Users.findByIdAndUpdate(
+    req.user._id,
+    { $set: { fullname, email } },
+    { new: true }
+  ).select("-password -refreshToken");
+
+  res
+    .status(200)
+    .json(new ApiRespose(200, updatedUser, "Details successfully updated"));
+});
+
+const updateUserAvatar = asyncHandler(async (req, res) => {
+  // in this controller we use two middleware one is multer.middleware.js and second is auth.middleware.js
+  const avatarLocalPath = req.file?.path;
+
+  if (!avatarLocalPath) {
+    throw new ApiError(400, "Avatar file path not found");
+  }
+  let avatar;
+  try {
+    const uploadResponse = await uploadToCloudinary(avatarLocalPath);
+    avatar = uploadResponse?.url;
+
+    // Remove local file after successful upload
+    fs.unlinkSync(avatarLocalPath);
+  } catch (err) {
+    throw new ApiError(500, "Error uploading avatar to Cloudinary");
+  }
+
+  if (!avatar) {
+    throw new ApiError(400, "upload error");
+  }
+
+  const updatedUserAvatar = await Users.findByIdAndUpdate(
+    req.user._id,
+    { $set: { avatar } },
+    { new: true }
+  ).select("-password -refreshToken");
+
+  res
+    .status(200)
+    .json(
+      new ApiRespose(200, updatedUserAvatar, "avatar updated successfully")
+    );
+});
+
+const updateUserCoverImage = asyncHandler(async (req, res) => {
+  // in this controller we use two middleware one is multer.middleware.js and second is auth.middleware.js
+  const coverimageLocalPath = req.file?.path;
+
+  if (!coverimageLocalPath) {
+    throw new ApiError(400, "cover image file path not found");
+  }
+  let coverImage;
+  try {
+    const uploadResponse = await uploadToCloudinary(coverimageLocalPath);
+    coverImage = uploadResponse?.url;
+
+    // Remove local file after successful upload
+    fs.unlinkSync(coverimageLocalPath);
+  } catch (err) {
+    throw new ApiError(500, "Error uploading cover image to Cloudinary");
+  }
+
+  if (!coverImage) {
+    throw new ApiError(400, "upload error");
+  }
+
+  const updatedUserCoverImage = await Users.findByIdAndUpdate(
+    req.user._id,
+    { $set: { coverImage } },
+    { new: true }
+  ).select("-password -refreshToken");
+
+  res
+    .status(200)
+    .json(
+      new ApiRespose(200, updatedUserCoverImage, "avatar updated successfully")
+    );
+});
+
+const getUserChannelProfile = asyncHandler( async (req,res) => {})
+
+const getWatchHistory = asyncHandler(async (req,res)=>{})
+
+export {
+  userRegister,
+  userLogin,
+  refreshAccessToken,
+  userLogout,
+  changeCurrentPassword,
+  getCurrentUser,
+  updateAccountDetails,
+  updateUserAvatar,
+  updateUserCoverImage,
+};

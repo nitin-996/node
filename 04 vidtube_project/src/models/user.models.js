@@ -69,10 +69,10 @@ userSchema.pre("save", async function(next){
 
 // using schema methods function , here we are defining own 
 // custom methods.
-userSchema.methods.ispasswordCorrrect = async function(password){
+userSchema.methods.ispasswordCorrect = async function(password){
 
     // this compare functions returns true or false
-    const result = bcrypt.compare(password,this.password)
+    const result = bcrypt.compare(password, this.password)
     return result
 }
 
